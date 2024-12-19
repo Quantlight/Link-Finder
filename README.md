@@ -2,6 +2,9 @@
 
 Link Finder is a Python-based application built with PyQt6 that extracts unique URLs from a variety of file formats. The application supports reading files in CSV, TXT, DOCX, XLSX, SQLite, and other text-readable formats. After extracting the URLs, the app saves them to a specified text file.
 
+## Screenshot
+![Main UI Screenshot](image.png)
+
 ## Features
 
 - **Extract URLs**: The app can extract URLs from a variety of file types including CSV, TXT, DOCX, XLSX, and SQLite databases.
