@@ -1,7 +1,7 @@
 # Link Finder
 
 Link Finder is a Python-based application built with PyQt6 that extracts unique URLs from a variety of file formats. The application supports reading files in CSV, TXT, DOCX, XLSX, SQLite, and other text-readable formats. After extracting the URLs, the app saves them to a specified text file.
-
+#### You can download the Software from the [Releases](https://github.com/Quantlight/Link-Finder/releases/tag/Latest) Panel. No Installation of the Python is needed.
 ## Screenshot
 ![Main UI Screenshot](image.png)
 
