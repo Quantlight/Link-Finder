@@ -71,7 +71,7 @@ class URLExtractorApp(QMainWindow):
         self.log_output = QTextEdit()
         self.log_output.setFont(font)
         self.log_output.setReadOnly(True)
-        self.log_output.setStyleSheet("background-color: #F5F5F5; border: 1px solid #DDD; border-radius: 5px;")
+        self.log_output.setStyleSheet("background-color: #555555; color: white; border: 1px solid #666; border-radius: 5px;")
         self.layout.addWidget(self.log_output)
 
         # Set layout
@@ -81,10 +81,10 @@ class URLExtractorApp(QMainWindow):
         # Styling
         self.setStyleSheet(""" 
             QMainWindow {
-                background-color: #FAFAFA;
+                background-color: #222222;
             }
             QLabel {
-                color: #333333;
+                color: #FFFFFF;
             }
             QPushButton {
                 background-color: #2196F3;
@@ -96,10 +96,15 @@ class URLExtractorApp(QMainWindow):
                 background-color: #1976D2;
             }
             QLineEdit {
-                background-color: #FFFFFF;
-                border: 1px solid #CCCCCC;
+                background-color: #555555;
+                color: #FFF;
+                border: 0px solid #DDDDDD;
                 border-radius: 5px;
                 padding: 5px;
+            }
+            QMessageBox {
+                background-color: #555555;
+                color:black;
             }
         """)
 
@@ -203,25 +208,35 @@ class URLExtractorApp(QMainWindow):
                             unique_urls.add(full_url)
 
     def extract_from_db(self, input_file, url_pattern, unique_urls):
-        conn = sqlite3.connect(input_file)
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM sqlite_master WHERE type='table'")
-        tables = cursor.fetchall()
-        for table in tables:
-            table_name = table[1]
-            cursor.execute(f"SELECT * FROM {table_name}")
-            rows = cursor.fetchall()
-            for row in rows:
-                for cell in row:
-                    if isinstance(cell, str):
-                        matches = url_pattern.findall(cell)
-                        for match in matches:
-                            scheme = match[0]
-                            domain = match[1]
-                            path = match[2] if match[2] else ''
-                            full_url = f"{scheme}://{domain}{path}"
-                            unique_urls.add(full_url)
-        conn.close()
+        try:
+            conn = sqlite3.connect(input_file)
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            tables = cursor.fetchall()
+
+            self.log_output.append(f"Tables in the database: {tables}")
+
+            for table in tables:
+                table_name = table[0]
+                try:
+                    cursor.execute(f"SELECT * FROM `{table_name}`")
+                    rows = cursor.fetchall()
+                    for row in rows:
+                        for cell in row:
+                            if isinstance(cell, str):  # Ensure the cell is a string
+                                matches = url_pattern.findall(cell)
+                                for match in matches:
+                                    scheme = match[0]
+                                    domain = match[1]
+                                    path = match[2] if match[2] else ''
+                                    full_url = f"{scheme}://{domain}{path}"
+                                    unique_urls.add(full_url)
+                except sqlite3.DatabaseError as e:
+                    self.log_output.append(f"Error querying table {table_name}: {e}")
+            conn.close()
+
+        except sqlite3.DatabaseError as e:
+            self.log_output.append(f"Error connecting to database: {e}")
 
 # Main Application
 if __name__ == "__main__":
